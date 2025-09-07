@@ -1344,7 +1344,7 @@ def GetMicroGenData(Token,Serial):
             print("MicroGen totalPower: " + ConsoleColor.OKCYAN + str(parsed_inverter_json['data']['totalPower']) + ConsoleColor.ENDC)
             print("MicroGen Frequency: " + ConsoleColor.OKCYAN + str(parsed_inverter_json['data']['genFac']) + ConsoleColor.ENDC) 
             postapi.PostHAEntity(Serial,"W","power","MicroGen Power","microgen_power",str(parsed_inverter_json['data']['totalPower']))
-            postapi.PostHAEntity(Serial,"Hz","frequency","MicroGen Frequency","microgen_frequency",str(parsed_inverter_json['data']['genfac']))
+            postapi.PostHAEntity(Serial,"Hz","frequency","MicroGen Frequency","microgen_frequency",str(parsed_inverter_json['data']['genFac']))
 
             print(ConsoleColor.OKGREEN + "Output fetch complete" + ConsoleColor.ENDC)
                 
@@ -1360,6 +1360,7 @@ def GetMicroGenData(Token,Serial):
 
     except json.JSONDecodeError:
         print(ConsoleColor.FAIL + "Error: Failed to parse Service Provider API response." + ConsoleColor.ENDC)         
+
 
 
 
