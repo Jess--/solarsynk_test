@@ -1311,6 +1311,56 @@ def GetDCACTemp(Token,Serial):
 
 
 
+def GetMicroGenData(Token,Serial):
+    global api_server   
+    inverter_url = f"https://{api_server}/api/v1/inverter/gen/{Serial}/realtime"
+    # Headers (Fixed Bearer token format)
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {Token}"
+    }
+
+    try:
+        # Corrected to use GET request
+        response = requests.get(inverter_url, headers=headers, timeout=10)
+        response.raise_for_status()
+
+        parsed_inverter_json = response.json()
+
+        if parsed_inverter_json.get('msg') == "Success":           
+            print(ConsoleColor.BOLD + "Output data fetch response: " + ConsoleColor.OKGREEN + parsed_inverter_json['msg'] + ConsoleColor.ENDC)
+            #print(parsed_inverter_json)            
+            print(ConsoleColor.WARNING + str(len(parsed_inverter_json['data']['vip'])) + ConsoleColor.ENDC +  " Output Phase(es) detected.")
+            #Loop through Load Phases            
+            for x in range(len(parsed_inverter_json['data']['vip'])): 
+                currentOutput = str(x) 
+                print(f"Output {currentOutput} Volt: " + ConsoleColor.OKCYAN + str(parsed_inverter_json['data']['vip'][x]['volt']) + ConsoleColor.ENDC)
+                print(f"Output {currentOutput} Current: " + ConsoleColor.OKCYAN + str(parsed_inverter_json['data']['vip'][x]['current']) + ConsoleColor.ENDC)
+                print(f"Output {currentOutput} Power: " + ConsoleColor.OKCYAN + str(parsed_inverter_json['data']['vip'][x]['power']) + ConsoleColor.ENDC)
+                postapi.PostHAEntity(Serial,"V","voltage",f"Inverter Voltage Phase {currentOutput}",f"microgen_voltage_phase_{currentOutput}",parsed_inverter_json['data']['vip'][x]['volt'])                
+                postapi.PostHAEntity(Serial,"current","current",f"Inverter Current Phase {currentOutput}",f"microgen_current_phase_{currentOutput}",parsed_inverter_json['data']['vip'][x]['current'])
+                postapi.PostHAEntity(Serial,"power","power",f"Inverter Power Phase {currentOutput}",f"microgen_power_phase_{currentOutput}",parsed_inverter_json['data']['vip'][x]['power'])
+            
+            print("MicroGen totalPower: " + ConsoleColor.OKCYAN + str(parsed_inverter_json['data']['totalPower']) + ConsoleColor.ENDC)
+            print("MicroGen Frequency: " + ConsoleColor.OKCYAN + str(parsed_inverter_json['data']['fac']) + ConsoleColor.ENDC) 
+            postapi.PostHAEntity(Serial,"W","power","MicroGen Power","microgen_power",str(parsed_inverter_json['data']['totalPower']))
+            postapi.PostHAEntity(Serial,"Hz","frequency","MicroGen Frequency","microgen_frequency",str(parsed_inverter_json['data']['genfac']))
+
+            print(ConsoleColor.OKGREEN + "Output fetch complete" + ConsoleColor.ENDC)
+                
+            
+        else:
+            print("Output data fetch response: " + ConsoleColor.FAIL + parsed_inverter_json['msg'] + ConsoleColor.ENDC)
+
+    except requests.exceptions.Timeout:
+        print(ConsoleColor.FAIL + "Error: Request timed out while connecting to Service Provider API." + ConsoleColor.ENDC)
+
+    except requests.exceptions.RequestException as e:
+        print(ConsoleColor.FAIL + f"Error: Failed to connect to Service Provider API. {e}" + ConsoleColor.ENDC)
+
+    except json.JSONDecodeError:
+        print(ConsoleColor.FAIL + "Error: Failed to parse Service Provider API response." + ConsoleColor.ENDC)         
+
 
 
 
