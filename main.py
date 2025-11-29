@@ -105,7 +105,7 @@ if BearerToken:
                 (getapi.GetLoadData, "Load Data"),
                 (getapi.GetOutputData, "Output Data"),
                 (getapi.GetDCACTemp, "DC & AC Temperature Data"),
-                (getapi.GetInverterSettingsData, "Inverter Settings")
+                (getapi.GetInverterSettingsData, "Inverter Settings"),
                 (getapi.GetMicroGenData, "Microgeneration Data")
             ]
 
