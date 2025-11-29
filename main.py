@@ -105,7 +105,7 @@ if BearerToken:
                 (getapi.GetLoadData, "Load Data"),
                 (getapi.GetOutputData, "Output Data"),
                 (getapi.GetDCACTemp, "DC & AC Temperature Data"),
-                (getapi.GetInverterSettingsData, "Inverter Settings"),
+                (getapi.GetInverterSettingsData, "Inverter Settings")
                 (getapi.GetMicroGenData, "Microgeneration Data")
             ]
 
@@ -121,13 +121,45 @@ if BearerToken:
 
             print(ConsoleColor.OKGREEN + "All API calls completed successfully!" + ConsoleColor.ENDC)
 
-            # Download and process inverter settings
-            settingsmanager.DownloadProviderSettings(BearerToken, str(serialitem))
-            settingsmanager.GetNewSettingsFromHAEntity(BearerToken, str(serialitem))
+            print("Checking if settings can be processed and flushed...")
 
-            # Clear old settings to prevent re-sending
-            print("Cleaning out previous settings...")
-            settingsmanager.ResetSettingsEntity(serialitem)
+            # BOF CHECK SETTINGS ENTITY's EXISTENCE
+            # SETUP VARS
+            SUPERVISOR_URL = os.getenv("SUPERVISOR", "http://supervisor")
+            SUPERVISOR_TOKEN = os.getenv("SUPERVISOR_TOKEN")
+            url = f"{SUPERVISOR_URL}/core/api/states/input_text.solarsynkv3_{serialitem}_settings"
+            print(ConsoleColor.MAGENTA + "URL --> " + url + ConsoleColor.ENDC)
+            
+            headers = {
+                "Authorization": f"Bearer {SUPERVISOR_TOKEN}",
+                "Content-Type": "application/json",
+            }
+            
+            # Connect and get settings entity response details
+            try:
+                response = requests.get(url, headers=headers, timeout=5)
+                if response.status_code == 200:
+                    print(ConsoleColor.OKGREEN + f"URL exists (Status code: {response.status_code}) Settings may be processed and flushed." + ConsoleColor.ENDC)
+                    SettingsExist = True
+                else:
+                    print(ConsoleColor.FAIL + f"Error: Unable to connect to Home Assistant Settings via the API HTTP Error: {response.status_code}. Settings will not be processed or applied. Please create a text entity manually named: [solarsynkv3_{serialitem}_settings]" + ConsoleColor.ENDC)
+                    SettingsExist = False
+            
+            except requests.RequestException as e:
+                print(f"Error connecting: {e}")
+                SettingsExist = False
+            # EOF CHECK SETTINGS ENTITY's EXISTENCE
+     
+
+
+
+            
+            if SettingsExist==True:
+                # Download and process inverter settings
+                settingsmanager.DownloadProviderSettings(BearerToken, str(serialitem))
+                settingsmanager.GetNewSettingsFromHAEntity(BearerToken, str(serialitem))                
+                # Clear old settings to prevent re-sending
+                settingsmanager.ResetSettingsEntity(serialitem)
 
         else:
             print(ConsoleColor.FAIL + varContest + ConsoleColor.ENDC)
