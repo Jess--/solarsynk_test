@@ -1,3 +1,5 @@
+import logging
+
 import postapi
 import json
 import requests
@@ -39,7 +41,6 @@ def GetInverterInfo(Token,Serial):
         response.raise_for_status()
 
         parsed_inverter_json = response.json()
-
         if parsed_inverter_json.get('msg') == "Success":
             print("Inverter fetch response: " + ConsoleColor.OKGREEN + parsed_inverter_json['msg'] + ConsoleColor.ENDC)
             #print(parsed_inverter_json);            
