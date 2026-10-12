@@ -106,7 +106,7 @@ if BearerToken:
                 (getapi.GetOutputData, "Output Data"),
                 (getapi.GetDCACTemp, "DC & AC Temperature Data"),
                 (getapi.GetInverterSettingsData, "Inverter Settings"),
-                (getapi.GetFlowData, "Flow Data")
+ #               (getapi.GetFlowData, "Flow Data")
                 
             ]
 
