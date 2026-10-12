@@ -1,5 +1,29 @@
+### 2025/11/25
+Version "3.0.31" - Added newly-required nonce and sign to token request
+
+### 2025/10/11
+Version "3.0.30" - Made some config fields optional.
+  Home_Assistant_IP: str?
+  Home_Assistant_PORT: int?
+  HA_LongLiveToken: password?
+
+### 2025/09/22
+Version "3.0.29" - Fixed the bootstrapping issue where the settings entity will be automatically created when you run the addon for the first time due to the settings entity "reset" action.
+
+### 2025/09/22
+Version "3.0.28" - Added option to use internal "supervisor" API to communicate with Home Assistant. Users should select this option unless they are updating a different HA instance to where this addon is installed. Existing users will not be affected by default, but can change their configuration if they wish.
+
+### 2025/09/21
+Version "3.0.27" - Fix hardcoded end-point hostname in gettoken.py
+
+### 2025/09/18
+Version "3.0.26" - Fix bad DOCKERFILE in 3.0.25
+
+### 2025/09/17
+Version "3.0.25" - Allow sending settings back to inverter in shortened format
+
 ### 2025/09/06
-Version "3.0.23" - Added more entities, Base Inverter info are now also posted as an entity instead of just dumping the info in the log.
+Version "3.0.24" - Added more entities, Base Inverter info are now also posted as an entity instead of just dumping the info in the log.
 
 ### 2025/09/02
 Version "3.0.23" - Added All Inverter settings to be posted to entities.
